@@ -4,7 +4,7 @@ import { Context } from '../types';
  * Return a usable auth token or, failing that, try to get a new one
  * You should use this whenever you want to auth e.g. an API request
  */
-export async function getToken (ctx: Context): Promise<string> {
+export async function getToken(ctx: Context): Promise<string> {
     const {
         authAPI,
         logger: {
@@ -20,7 +20,7 @@ export async function getToken (ctx: Context): Promise<string> {
 
     if (token && tokens.expiresIn() > 60) {
         debug('Using fresh token from store');
-        return token.access_token;
+        return token.id_token;
     }
 
     if (refreshTokens) {
@@ -32,7 +32,7 @@ export async function getToken (ctx: Context): Promise<string> {
                 debug('Attempting to use refresh token');
                 const token = await authAPI.exchangeRefreshToken(refreshToken);
                 await tokens.set(token);
-                return token.access_token;
+                return token.id_token;
 
             } catch (err) {
                 warn(`Could not use refresh token, may have been revoked`);
@@ -48,7 +48,7 @@ export async function getToken (ctx: Context): Promise<string> {
 /**
  * Check whether we are logged in
  */
-export async function isLoggedIn (ctx: Context) {
+export async function isLoggedIn(ctx: Context) {
     return !!await ctx.tokens.get();
 }
 
@@ -56,7 +56,7 @@ export async function isLoggedIn (ctx: Context) {
  * Manually start a login flow.
  * If you just want a token, use getToken(), which will log in only if we don't have a token available.
  */
-export async function login (ctx: Context): Promise<string> {
+export async function login(ctx: Context): Promise<string> {
     const {
         authAPI,
         authWindow,
@@ -74,7 +74,7 @@ export async function login (ctx: Context): Promise<string> {
 
     debug('Received token from Auth0');
 
-    const { access_token, refresh_token } = token;
+    const { id_token, refresh_token } = token;
 
     if (refreshTokens) {
         if (refresh_token) {
@@ -88,13 +88,13 @@ export async function login (ctx: Context): Promise<string> {
     await tokens.set(token);
     debug('Login successful');
 
-    return access_token;
+    return id_token;
 }
 
 /**
  * Log the user out
  */
-export async function logout (ctx: Context) {
+export async function logout(ctx: Context) {
     const {
         authWindow,
         refreshTokens,

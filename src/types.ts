@@ -2,7 +2,7 @@
 import keytar from 'keytar';
 export type Keytar = typeof keytar;
 
-export type Operation <I, O> = (ctx: Context, input: I) => O;
+export type Operation<I, O> = (ctx: Context, input: I) => O;
 
 export type Adapter = (cfg: Config) => Partial<Context>;
 
@@ -41,7 +41,8 @@ export type TokenResponse = {
     expires_in: number
     scope: string,
     refresh_token?: string
-    token_type: string
+    token_type: string,
+    id_token: string
 }
 
 export type Config = {
@@ -73,11 +74,11 @@ export type Config = {
 
     // Set up refresh tokens
     refreshTokens?:
-        | { keytar: typeof keytar, appName: string }
-        | { store: Store<string> }
+    | { keytar: typeof keytar, appName: string }
+    | { store: Store<string> }
 }
 
-export type Store <T> = {
+export type Store<T> = {
     delete(): Promise<void>,
     get(): Promise<T | null>,
     set(t: T): Promise<void>
